@@ -463,6 +463,17 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Set logical size of the stage in Scratch units.
+     * @param {int} x The camera's x-coordinate.
+     * @param {int} y The camera's y-coordinate.
+     * @param {int} dir The camera's rotation.
+     * @param {int} zoom The camera's zoom.
+     */
+    setCameraPosition (x, y, dir, zoom) {
+        // no-op: still in dev
+    }
+
+    /**
      * @return {Array<int>} the "native" size of the stage, which is used for pen, query renders, etc.
      */
     getNativeSize () {
