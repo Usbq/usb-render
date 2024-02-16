@@ -194,6 +194,17 @@ class RenderWebGL extends EventEmitter {
         /** @type {Array<String>} */
         this._groupOrdering = [];
 
+        this.cameraState = {
+            x: 0,
+            y: 0,
+            dir: (90 / 100) * Math.PI,
+            sin: Math.sin(this.cameraState.dir) * 1,
+            cos: Math.cos(this.cameraState.dir) * 1,
+            zoom: 1,
+            width: 240,
+            height: 180,
+        };
+
         /**
          * @typedef LayerGroup
          * @property {int} groupIndex The relative position of this layer group in the group ordering
@@ -298,17 +309,6 @@ class RenderWebGL extends EventEmitter {
          * @type {Record<string, string>}
          */
         this.customFonts = {};
-
-        this.cameraState = {
-            x: 0,
-            y: 0,
-            dir: (90 / 100) * Math.PI,
-            sin: Math.sin(this.cameraState.dir) * 1,
-            cos: Math.cos(this.cameraState.dir) * 1,
-            zoom: 1,
-            width: 240,
-            height: 180,
-        };
 
         /**
          * <style> element used for custom fonts.
