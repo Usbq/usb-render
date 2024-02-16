@@ -197,9 +197,9 @@ class RenderWebGL extends EventEmitter {
         this.cameraState = {
             x: 0,
             y: 0,
-            dir: (90 / 100) * Math.PI,
-            sin: Math.sin(this.cameraState.dir) * 1,
-            cos: Math.cos(this.cameraState.dir) * 1,
+            dir: 0.9 * Math.PI,
+            sin: Math.sin(0.9 * Math.PI) * 1,
+            cos: Math.cos(0.9 * Math.PI) * 1,
             zoom: 1,
             width: 240,
             height: 180,
