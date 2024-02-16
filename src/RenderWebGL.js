@@ -456,21 +456,51 @@ class RenderWebGL extends EventEmitter {
         this._yBottom = yBottom;
         this._yTop = yTop;
 
-        // swap yBottom & yTop to fit Scratch convention of +y=up
-        this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
-
         this._setNativeSize(Math.abs(xRight - xLeft), Math.abs(yBottom - yTop));
+
+        this._updateProjection();
     }
 
     /**
-     * Set logical size of the stage in Scratch units.
+     * Update any/all camera values.
      * @param {int} x The camera's x-coordinate.
      * @param {int} y The camera's y-coordinate.
      * @param {int} dir The camera's rotation.
      * @param {int} zoom The camera's zoom.
      */
-    setCameraPosition (x, y, dir, zoom) {
-        // no-op: still in dev
+    updateCamera (x, y, dir, zoom) {
+        this._projectionX = x;
+        this._projectionY = y;
+
+        zoom = zoom / 100;
+        dir = (dir / 180) * Math.PI;
+        this._projectionSin = Math.sin(dir) * zoom;
+        this._projectionCos = Math.cos(dir) * zoom;
+
+        this._updateProjection();
+    }
+
+    _updateProjection() {
+        // swap yBottom & yTop to fit Scratch convention of +y=up
+        this._projection = [
+            this._projectionCos / this._xRight,
+            -this._projectionSin / this._yTop,
+            0,
+            0,
+            this._projectionSin / this._xRight,
+            this._projectionCos / this._yTop,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            (this._projectionCos * -this.projectionX + this._projectionSin * -this.projectionY) / this._xRight,
+            (this._projectionCos * -this.projectionY - this._projectionSin * -this.projectionX) / this._yYop,
+            0,
+            1,
+        ];
+        vm.renderer.dirty = true;
     }
 
     /**
