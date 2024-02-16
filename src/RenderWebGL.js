@@ -1558,8 +1558,8 @@ class RenderWebGL extends EventEmitter {
 
         this._doExitDrawRegion();
 
-        let nativeCenterX = this._nativeSize[0] * 0.5;
-        let nativeCenterY = this._nativeSize[1] * 0.5;
+        const nativeCenterX = this._nativeSize[0] * 0.5;
+        const nativeCenterY = this._nativeSize[1] * 0.5;
 
         const scratchBounds = drawable.getFastBounds();
 
