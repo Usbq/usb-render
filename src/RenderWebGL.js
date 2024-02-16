@@ -197,9 +197,9 @@ class RenderWebGL extends EventEmitter {
         this.cameraState = {
             x: 0,
             y: 0,
-            dir: 0.9 * Math.PI,
-            sin: Math.sin(0.9 * Math.PI) * 1,
-            cos: Math.cos(0.9 * Math.PI) * 1,
+            dir: 0.5 * Math.PI,
+            sin: Math.sin(0.5 * Math.PI) * 1,
+            cos: Math.cos(0.5 * Math.PI) * 1,
             zoom: 1,
             width: 240,
             height: 180,
@@ -486,8 +486,10 @@ class RenderWebGL extends EventEmitter {
         this.cameraState.x = x;
         this.cameraState.y = y;
 
-        this.cameraState.zoom = zoom / 100;
-        this.cameraState.dir = (dir / 180) * Math.PI;
+        zoom = zoom / 100;
+        dir = (dir / 180) * Math.PI;
+        this.cameraState.zoom = zoom;
+        this.cameraState.dir = dir;
         this.cameraState.sin = Math.sin(dir) * zoom;
         this.cameraState.cos = Math.cos(dir) * zoom;
 
@@ -522,17 +524,6 @@ class RenderWebGL extends EventEmitter {
             1,
         ];
         this.dirty = true;
-    }
-
-    /**
-     * Set logical size of the stage in Scratch units.
-     * @param {int} x The camera's x-coordinate.
-     * @param {int} y The camera's y-coordinate.
-     * @param {int} dir The camera's rotation.
-     * @param {int} zoom The camera's zoom.
-     */
-    setCameraPosition (x, y, dir, zoom) {
-        // no-op: still in dev
     }
 
     /**
