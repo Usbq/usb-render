@@ -487,11 +487,12 @@ class RenderWebGL extends EventEmitter {
         this.cameraState.y = y;
 
         zoom = zoom / 100;
-        dir = ((-dir + 90) / 180) * Math.PI;
-        this.cameraState.zoom = zoom;
-        this.cameraState.dir = dir;
+        dir = -dir + 90;
+        dir = (dir / 180) * Math.PI;
         this.cameraState.sin = Math.sin(dir) * zoom;
         this.cameraState.cos = Math.cos(dir) * zoom;
+        this.cameraState.zoom = zoom;
+        this.cameraState.dir = dir;
 
         this._updateProjection();
     }
@@ -555,7 +556,7 @@ class RenderWebGL extends EventEmitter {
         const cy = this.cameraState.y;
         const dir = this.cameraState.dir;
 
-        if ((dir - 90) % 360 === 0 || !doZoom) {
+        if (dir % 360 === 0 || !doZoom) {
             return this._translateX(x, fromTopLeft, xMult, doZoom);
         } else {
             const w = fromTopLeft ? this.cameraState.width : 0;
@@ -565,7 +566,7 @@ class RenderWebGL extends EventEmitter {
                 cy + h, 
                 this._translateX(x, fromTopLeft, xMult, doZoom),
                 this._translateY(y, fromTopLeft, yMult, doZoom),
-                ((-dir + 90) / 180) * Math.PI
+                dir
             );
             return rotated[0];
         }
@@ -576,7 +577,7 @@ class RenderWebGL extends EventEmitter {
         const cy = this.cameraState.y;
         const dir = this.cameraState.dir;
 
-        if ((dir - 90) % 360 === 0 || !doZoom) {
+        if (dir % 360 === 0 || !doZoom) {
             return this._translateY(y, fromTopLeft, yMult, doZoom);
         } else {
             const w = fromTopLeft ? this.cameraState.width : 0;
@@ -586,7 +587,7 @@ class RenderWebGL extends EventEmitter {
                 cy + h, 
                 this._translateX(x, fromTopLeft, xMult, doZoom),
                 this._translateY(y, fromTopLeft, yMult, doZoom),
-                ((-dir + 90) / 180) * Math.PI
+                dir
             );
             return rotated[1];
         }
