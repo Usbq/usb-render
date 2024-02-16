@@ -469,10 +469,11 @@ class RenderWebGL extends EventEmitter {
      * @param {int} zoom The camera's zoom.
      */
     updateCamera (x, y, dir, zoom) {
-        this._projectionX = x;
-        this._projectionY = y;
+        this._projectionX = x ?? 0;
+        this._projectionY = y ?? 0;
 
-        zoom = zoom / 100;
+        zoom = zoom / 100 ?? 1;
+        dir = dir ?? 90;
         dir = (dir / 180) * Math.PI;
         this._projectionSin = Math.sin(dir) * zoom;
         this._projectionCos = Math.cos(dir) * zoom;
@@ -500,7 +501,7 @@ class RenderWebGL extends EventEmitter {
             0,
             1,
         ];
-        vm.renderer.dirty = true;
+        this.dirty = true;
     }
 
     /**
