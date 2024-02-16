@@ -299,6 +299,17 @@ class RenderWebGL extends EventEmitter {
          */
         this.customFonts = {};
 
+        this.cameraState = {
+            x: 0,
+            y: 0,
+            dir: (90 / 100) * Math.PI,
+            sin: Math.sin(this.cameraState.dir) * 1,
+            cos: Math.cos(this.cameraState.dir) * 1,
+            zoom: 1,
+            width: 240,
+            height: 180,
+        };
+
         /**
          * <style> element used for custom fonts.
          * @type {HTMLStyleElement|null}
@@ -456,6 +467,9 @@ class RenderWebGL extends EventEmitter {
         this._yBottom = yBottom;
         this._yTop = yTop;
 
+        this.cameraState.width = xRight;
+        this.cameraState.height = yTop;
+
         this._setNativeSize(Math.abs(xRight - xLeft), Math.abs(yBottom - yTop));
 
         this._updateProjection();
@@ -468,36 +482,42 @@ class RenderWebGL extends EventEmitter {
      * @param {int} dir The camera's rotation.
      * @param {int} zoom The camera's zoom.
      */
-    updateCamera (x, y, dir, zoom) {
-        this._projectionX = x ?? 0;
-        this._projectionY = y ?? 0;
+    _updateCamera (x, y, dir, zoom) {
+        this.cameraState.x = x;
+        this.cameraState.y = y;
 
-        zoom = zoom / 100 ?? 1;
-        dir = dir ?? 90;
-        dir = (dir / 180) * Math.PI;
-        this._projectionSin = Math.sin(dir) * zoom;
-        this._projectionCos = Math.cos(dir) * zoom;
+        this.cameraState.zoom = zoom / 100;
+        this.cameraState.dir = (dir / 180) * Math.PI;
+        this.cameraState.sin = Math.sin(dir) * zoom;
+        this.cameraState.cos = Math.cos(dir) * zoom;
 
         this._updateProjection();
     }
 
     _updateProjection() {
+        const sin = this.cameraState.sin;
+        const cos = this.cameraState.cos;
+        const width = this.cameraState.width;
         // swap yBottom & yTop to fit Scratch convention of +y=up
+        const height = this.cameraState.height;
+        const x = this.cameraState.x;
+        const y = this.cameraState.y;
+
         this._projection = [
-            this._projectionCos / this._xRight,
-            -this._projectionSin / this._yTop,
+            cos / width,
+            -sin / height,
             0,
             0,
-            this._projectionSin / this._xRight,
-            this._projectionCos / this._yTop,
+            sin / width,
+            cos / height,
             0,
             0,
             0,
             0,
             -1,
             0,
-            (this._projectionCos * -this.projectionX + this._projectionSin * -this.projectionY) / this._xRight,
-            (this._projectionCos * -this.projectionY - this._projectionSin * -this.projectionX) / this._yYop,
+            (cos * -x + sin * -y) / width,
+            (cos * -y - sin * -x) / height,
             0,
             1,
         ];
