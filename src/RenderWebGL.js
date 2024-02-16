@@ -526,6 +526,72 @@ class RenderWebGL extends EventEmitter {
         this.dirty = true;
     }
 
+    _translateX(x, fromTopLeft = false, multiplier = 1, doZoom = true) {
+        const cx = this.cameraState.x;
+        const zoom = this.cameraState.zoom;
+
+        const w = fromTopLeft ? this.cameraState.width : 0;
+        return (x - w) / (doZoom ? zoom : 1) + w + cx * multiplier;
+    }
+
+    _translateY(y, fromTopLeft = false, multiplier = 1, doZoom = true) {
+        const cy = this.cameraState.y;
+        const zoom = this.cameraState.zoom;
+
+        const h = fromTopLeft ? this.cameraState.height : 0;
+        return (y - h) / (doZoom ? zoom : 1) + h + cy * multiplier;
+    }
+
+    rotate(cx, cy, x, y, radians) {
+        const cos = Math.cos(radians),
+            sin = Math.sin(radians),
+            nx = cos * (x - cx) + sin * (y - cy) + cx,
+            ny = cos * (y - cy) - sin * (x - cx) + cy;
+        return [nx, ny];
+    }
+
+    translateX(x, fromTopLeft = false, xMult = 1, doZoom = true, y = 0, yMult = xMult) {
+        const cx = this.cameraState.x;
+        const cy = this.cameraState.y;
+        const dir = this.cameraState.dir;
+
+        if ((dir - 90) % 360 === 0 || !doZoom) {
+            return this._translateX(x, fromTopLeft, xMult, doZoom);
+        } else {
+            const w = fromTopLeft ? this.cameraState.width : 0;
+            const h = fromTopLeft ? this.cameraState.height : 0;
+            const rotated = this.rotate(
+                cx + w, 
+                cy + h, 
+                this._translateX(x, fromTopLeft, xMult, doZoom),
+                this._translateY(y, fromTopLeft, yMult, doZoom),
+                ((-dir + 90) / 180) * Math.PI
+            );
+            return rotated[0];
+        }
+    }
+
+    translateY(y, fromTopLeft = false, yMult = 1, doZoom = true, x = 0, xMult = yMult) {
+        const cx = this.cameraState.x;
+        const cy = this.cameraState.y;
+        const dir = this.cameraState.dir;
+
+        if ((dir - 90) % 360 === 0 || !doZoom) {
+            return this._translateY(y, fromTopLeft, yMult, doZoom);
+        } else {
+            const w = fromTopLeft ? this.cameraState.width : 0;
+            const h = fromTopLeft ? this.cameraState.height : 0;
+            const rotated = this.rotate(
+                cx + w, 
+                cy + h, 
+                this._translateX(x, fromTopLeft, xMult, doZoom),
+                this._translateY(y, fromTopLeft, yMult, doZoom),
+                ((-dir + 90) / 180) * Math.PI
+            );
+            return rotated[1];
+        }
+    }
+
     /**
      * @return {Array<int>} the "native" size of the stage, which is used for pen, query renders, etc.
      */
@@ -1412,6 +1478,9 @@ class RenderWebGL extends EventEmitter {
      * RenderConstants.ID_NONE if there is no Drawable at that location.
      */
     pick (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
+        centerX = this.translateX(centerX, true, 1, true, centerY, -1);
+        centerY = this.translateY(centerY, true, -1, true, centerX, 1);
+
         const bounds = this.clientSpaceToScratchBounds(centerX, centerY, touchWidth, touchHeight);
         if (bounds.left === -Infinity || bounds.bottom === -Infinity) {
             return false;
@@ -1569,10 +1638,14 @@ class RenderWebGL extends EventEmitter {
             // the canvas resizing, then it'll differ.
             const ratio = canvas.getBoundingClientRect().width / canvas.width;
 
+            const x = canvasSpaceBounds.left * ratio;
+            const y = canvasSpaceBounds.bottom * ratio;
+            const translatedX = this.translateX(x * ratio, false, -1, false, y * ratio, 1);
+            const translatedY = this.translateY(y * ratio, false, -1, false, x * ratio, 1);
             return {
                 imageData,
-                x: canvasSpaceBounds.left * ratio,
-                y: canvasSpaceBounds.bottom * ratio,
+                x: translatedX,
+                y: translatedY,
                 width: canvasSpaceBounds.width * ratio,
                 height: canvasSpaceBounds.height * ratio
             };
