@@ -1641,8 +1641,8 @@ class RenderWebGL extends EventEmitter {
 
             const x = canvasSpaceBounds.left * ratio;
             const y = canvasSpaceBounds.bottom * ratio;
-            const translatedX = this.translateX(x * ratio, false, -1, false, y * ratio, 1);
-            const translatedY = this.translateY(y * ratio, false, 1, false, x * ratio, -1);
+            const translatedX = this.translateX(x, false, -1, false, y, 1);
+            const translatedY = this.translateY(y, false, 1, false, x, -1);
             return {
                 imageData,
                 x: translatedX,
