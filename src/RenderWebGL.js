@@ -1975,13 +1975,6 @@ class RenderWebGL extends EventEmitter {
             y = Math.floor(drawable._position[1] + (sy - aabb.bottom));
         }
 
-        // USB: transform based on camera
-        x = this.translateX(
-            x, false, 1, true, y, 1
-        );
-        y = this.translateY(
-            y, false, 1, true, x, 1
-        );
         return [x, y];
     }
 
